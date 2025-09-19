@@ -1,0 +1,72 @@
+Pesquisar na literatura, internet ou IA Generativa sobre os métodos de ordenação e categoriza-los em:
+- algoritmo de memória interna ou memória externa 
+- estabilidade (estável ou instável) 
+- complexidade 
+- porções de ordenação
+
+Pesquisar os seguintes métodos de ordenação: 
+-> bolha (bubble sort) 
+    - memória interna 
+    - estável 
+    - O(nˆ2) 
+    - porção ordenada: final 
+
+-> seleção (selection sort) 
+    - memória interna 
+    - instável 
+    - O(nˆ2) 
+    - porção ordenada: início
+
+-> inserção (inserction sort) 
+    - memória interna 
+    - estável 
+    - O(nˆ2) 
+    - porção ordenada: início
+
+-> pente (combsort)
+    - memória interna
+    - instável
+    - O(n^2)
+    - porção ordenada: final
+
+-> agitação (shakesort ou cocktailsort)
+    - memória interna
+    - estável
+    - O(n^2)
+    - porção ordenada: início e final
+
+-> shellsort
+    - memória interna
+    - instável
+    - O(n^(3/2) ~ n^2) dependendo da sequência de gaps
+    - porção ordenada: subsequências por gap
+
+-> bucketsort
+    - memória interna (usa memória auxiliar)
+    - estável (se a ordenação dentro de cada balde for estável)
+    - O(n + k) (pior caso O(n^2))
+    - porção ordenada: por baldes
+
+-> radix
+    - memória interna (usa memória auxiliar)
+    - estável
+    - O(n * d), onde d é o número de dígitos/chaves
+    - porção ordenada: por dígitos
+
+-> heapsort
+    - memória interna
+    - instável
+    - O(n log n)
+    - porção ordenada: final
+
+-> mergesort
+    - memória interna (usa O(n) de memória auxiliar)
+    - estável
+    - O(n log n)
+    - porção ordenada: sublistas mescladas
+
+-> quicksort
+    - memória interna
+    - instável
+    - O(n log n) em média, pior caso O(n^2)
+    - porção ordenada: posições dos pivôs

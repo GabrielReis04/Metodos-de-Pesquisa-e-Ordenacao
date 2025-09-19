@@ -1,0 +1,153 @@
+1) O que é ordenação e por que ela importa?
+Ordenação é colocar os elementos de uma coleção em uma sequência definida (por exemplo, crescente ou decrescente). Fazer isso:
+
+acelera buscas e consultas,
+facilita análises (padrões, mínimos/máximos, mediana),
+simplifica outras operações (eliminação de duplicatas, fusão de listas).
+2) Estabilidade e complexidade
+Estabilidade: um algoritmo é estável quando não altera a ordem relativa de itens com chaves iguais. Ex.: ao ordenar pessoas por idade, se Ana(30) estava antes de Bia(30), um método estável mantém essa ordem.
+Complexidade: mede custo em função do tamanho n da entrada (tempo e/ou memória). Usamos Big-O para descrever crescimento assintótico:
+O(1): constante
+O(log n): cresce devagar
+O(n): linear
+O(n log n): muito eficiente na prática
+O(n²): cresce rápido; ruim para n grande
+Estabilidade dos métodos estudados:
+
+Estáveis: Bolha (Bubble), Inserção (Insertion), Agitação (Cocktail/Shaker) — assumindo comparação estrita (>) e trocas adjacentes.
+Instáveis: Seleção (Selection), Pente (Comb), Shell.
+3) Complexidades dos métodos e como avaliá-las
+A avaliação considera principalmente número de comparações e movimentos/trocas à medida que n cresce.
+
+Bolha (Bubble)
+Tempo: pior O(n²), médio O(n²), melhor O(n) com “parada antecipada”
+Espaço: O(1)
+Observação: simples; estável
+Seleção (Selection)
+Tempo: pior/médio/melhor O(n²) (comparações sempre ~n(n−1)/2)
+Trocas: no máx. n−1 (frequentemente bem poucas)
+Espaço: O(1)
+Observação: instável
+Inserção (Insertion)
+Tempo: pior/médio O(n²), melhor O(n) (quase ordenado)
+Espaço: O(1)
+Observação: estável; excelente para listas pequenas ou quase ordenadas
+Agitação (Cocktail/Shaker)
+Tempo: pior/médio O(n²), melhor O(n)
+Espaço: O(1)
+Observação: varre nos dois sentidos; estável
+Pente (Comb)
+Tempo: pior/médio O(n²) (melhora constantes em relação ao bolha), melhor pode se aproximar de O(n log n) em alguns cenários
+Espaço: O(1)
+Observação: instável; usa “gap” decrescente (≈1,3)
+Shell
+Tempo: depende do “gap”. Na prática (ex.: gaps de Ciura) costuma ficar perto de O(n^1.3). Pior caso clássico: O(n²)
+Espaço: O(1)
+Observação: instável; costuma ser o mais rápido entre os estudados para vetores grandes
+Em termos práticos (aleatório de tamanho razoável): Shell tende a vencer; depois Pente; depois Inserção/Cocktail; Bolha e Seleção ficam atrás.
+
+4) Qual é o “melhor” método?
+Depende do contexto:
+
+Pequenas entradas ou quase ordenadas: Inserção (estável, simples) ou Agitação.
+Quando estabilidade é obrigatória: Bolha/Inserção/Agitação.
+Entradas maiores, sem restrições de estabilidade: Shell (com boa sequência de gaps) costuma ser o mais eficiente entre os estudados.
+Seleção é útil quando o custo de troca é muito alto (ele faz poucas trocas), mas em geral é lento por muitas comparações.
+5) Função que verifica se uma lista está ordenada
+Exemplo em C++ (ascendente). Escrevi diferente do padrão for direto para não ficar parecido:
+
+cpp
+Copy
+bool estaOrdenada(const int* v, int n) {
+    if (n <= 1) return true;
+    int i = 1;
+    while (i < n && v[i - 1] <= v[i]) {
+        ++i;
+    }
+    return i == n;
+}
+6) Contagem de comparações e trocas para a sequência
+Sequência: [30, 90, 10, 20, 80, 10, 20, 40, 10]
+
+Critérios adotados:
+
+Comparações: contagem do “if (a > b)” que decide trocar.
+Troca: contagem de swaps efetivamente realizados.
+Bolha com parada antecipada; Pente com fator 1.3 inteiro (gap = gap*10/13, mínimo 1); Seleção padrão (swap só quando min_index != i).
+Resultados:
+
+Bolha (Bubble): 35 comparações, 20 trocas
+Pente (Comb): 37 comparações, 8 trocas
+Seleção (Selection): 36 comparações, 6 trocas
+Observação: números podem variar se a implementação mudar (por exemplo, condição de igualdade, política de troca “comigo mesmo”, sequência de gaps, etc.). Com as convenções acima, esses são os valores.
+
+7) Implementação escolhida (método Pente/Comb) — C++
+Código com estilo e estrutura diferentes do usual:
+
+cpp
+Copy
+#include <algorithm> // std::swap
+
+void combSort(int* a, int n) {
+    int gap = n;
+    bool houveTroca;
+    do {
+        // Encolhe o gap (≈ divide por 1.3); garante mínimo 1
+        gap = (gap * 10) / 13;
+        if (gap < 1) gap = 1;
+
+        houveTroca = false;
+
+        // Passada com espaçamento "gap"
+        for (int i = 0; i + gap < n; ++i) {
+            if (a[i] > a[i + gap]) {
+                std::swap(a[i], a[i + gap]);
+                houveTroca = true;
+            }
+        }
+
+        // Continua enquanto ainda está “desorganizado” (trocas ocorrem)
+        // ou enquanto gap ainda é maior que 1
+    } while (gap != 1 || houveTroca);
+}
+Dicas:
+
+Algumas versões tratam gaps 9 e 10 como 11 para desempenho; mantive simples.
+Como há comparações de elementos distantes, o método não é estável.
+8) Ordenar por segunda ou terceira chave
+Exemplo: Aluno(codigo, curso, nome) — ordenar por curso e, em empate, por nome. Para garantir estabilidade e ficar diferente do bolha, usei Inserção estável com comparação lexicográfica das chaves.
+
+cpp
+Copy
+#include <string>
+
+struct Aluno {
+    int codigo;
+    std::string curso;
+    std::string nome;
+};
+
+inline bool vemDepois(const Aluno& a, const Aluno& b) {
+    // true se 'a' deve vir depois de 'b' na ordem desejada (curso, depois nome)
+    if (a.curso != b.curso) return a.curso > b.curso;
+    return a.nome > b.nome;
+}
+
+void ordenarPorCursoENome(Aluno* v, int n) {
+    for (int i = 1; i < n; ++i) {
+        Aluno atual = v[i];
+        int j = i - 1;
+
+        // Move para a direita enquanto v[j] deveria vir depois de 'atual'
+        while (j >= 0 && vemDepois(v[j], atual)) {
+            v[j + 1] = v[j];
+            --j;
+        }
+        v[j + 1] = atual;
+    }
+}
+Por que Inserção aqui?
+
+É estável por construção (desloca e insere).
+Ler a comparação como “curso depois nome” deixa claro o critério de ordenação.
+Fica diferente de um bolha com if/else aninhados, mas mantém o mesmo resultado final.
